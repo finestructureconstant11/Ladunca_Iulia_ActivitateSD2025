@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <malloc.h>
+#include <string.h>
+
+struct Filiala {
+	int id;
+	char* denumire;
+	float buget;
+};
+
+struct Filiala initializareFiliala(int id, const char* denumire, float buget) {
+	struct Filiala f;
+	f.id = id; 
+
+	//alocam dinamic pt sir de caractere
+	f.denumire = (char*)malloc((strlen(denumire) + 1) * sizeof(char));
+	strcpy_s(f.denumire, strlen(denumire) + 1, denumire);
+
+	f.buget = buget;
+	return f;
+
+}
+
+void afisareFiliala(struct Filiala f) {
+	printf("ID:%d\n", f.id);
+	printf("Denumire: %s\n", f.denumire);
+	printf("Buget: %.2f\n\n", f.buget);
+}
+
+float calaculBugetTotal(struct Filiala* v, int nrFiliale) {
+	float suma = 0.0f;
+	for (int i = 0; i < nrFiliale; i++) {
+		suma += v[i].buget;
+	}
+	return suma;
+}
+
+void modificaBuget(struct Filiala* f, float bugetNou) {
+	f->buget = bugetNou;
+}
+
+void dezalocareFiliale(struct Filiala** v, int* nrFiliale) {
+	for (int i = 0; i < *nrFiliale; i++) {
+		free((*v)[i].denumire);
+
+	}
+	free(*v);
+	*nrFiliale = 0;
+	*v = NULL;
+}
+
+int main() {
+	int nr = 3;
+	struct Filiala* vectorFiliale =
+		(struct Filiala*)malloc(nr * sizeof(struct Filiala));
+
+	vectorFiliale[0] = initializareFiliala(1, "Sector 1", 50000.0f);
+	vectorFiliale[1] = initializareFiliala(2, "Sector 2", 75000.0f);
+	vectorFiliale[2] = initializareFiliala(3, "Sector 3", 62000.0f);
+
+	for (int i = 0; i < nr; i++) {
+		afisareFiliala(vectorFiliale[i]);
+	}
+
+	float total = calaculBugetTotal(vectorFiliale, nr);
+	printf("Buget total: %.2f\n\n", total);
+
+	//modificam bugetul filialei 2
+	printf("Modificam bugetul filialei 2 la 80000.00...\n\n");
+	modificaBuget(&vectorFiliale[1], 80000.0f);
+	afisareFiliala(vectorFiliale[1]);
+
+
+	dezalocareFiliale(&vectorFiliale, &nr);
+
+	return 0; 
+
+
+}
